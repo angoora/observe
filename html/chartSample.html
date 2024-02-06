@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Heart Rate Chart with Chart.js</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <script>
+    //http://121.78.115.81:8180/swagger-ui/#/report-controller/selectListSlpSttUsingGET
+    //Request URL
+    //http://121.78.115.81:8180/api/report/slp-stt?limit=500
+    //http://URL?api=http://121.78.115.81:8180/api/report/slp-stt?limit=500
+    let url = window.location.search;
+    let param = new URLSearchParams(url);
+    let api = param.get("api");
+    fetch(api)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success === true) {
+          /////////////////////////////////////////////////////////
+          //호출한 데이터 === data          
+
+
+
+
+
+
+
+
+
+          //차트생성 명령을 아래에
+          console.log(data.resultList);
+          /////////////////////////////////////////////////////////
+        }
+      }).catch(error => console.error(error));
+  </script>
+</body>
+
+</html>

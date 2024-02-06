@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Heart Rate Chart with Chart.js</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <canvas id="myChart1" style="position:fixed;left:0;top:0;bottom:0;width:100%;height:100%;z-index:99999"></canvas>
+  <script>
+    // 심박수 데이터 생성
+    function generateData() {
+      var data = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
+      return data;
+    }
+
+    // 차트 생성
+    var ctx = document.getElementById('myChart1').getContext('2d');
+    Chart.defaults.font.size = 32;
+    var chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        datasets: [{
+          label: '',
+          data: generateData(),
+          backgroundColor: '#fff',
+          borderColor: '#68B984',
+          borderWidth: 6,
+          pointRadius: 0,
+        }]
+      },
+      options: {
+        animation: false,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+    // http://192.168.0.14:8080/api/hrtRspr/selectRsprCnt
+    // {
+    //   "data_msrmt_dt": "2023-03-02T00:17:02.344+00:00",
+    //   "per_mnt_rspr_cnt": 18
+    // }
+    function drawChart() {
+      let url = window.location.search;
+      let param = new URLSearchParams(url);
+      let api = param.get("api");
+      fetch(api)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success === true) {
+            chart.data.datasets[0].data.shift(); // 가장 오래된 데이터 제거
+            chart.data.datasets[0].data.push(data.per_mnt_rspr_cnt); // 새로운 데이터 추가
+            chart.update(); // 차트 업데이트
+          }
+        }).catch(error => console.error(error));
+    }
+    drawChart();
+    setInterval(function () {
+      drawChart();
+    }, 10000)
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,345 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://unpkg.com/chartjs-plugin-annotation-draggable"></script>
+    <title>심박_주_차트</title>
+  </head>
+  <body>
+    <!-- ?api=http://121.78.115.81:8180/api/chart/hrt-rspr/week?search_date=2023-03-02 -->
+<canvas id="myChart" style="position:fixed;left:0;top:0;bottom:0;width:100%;height:100%;z-index:9999;"></canvas>
+
+    <script>
+
+      let url = window.location.search;
+    let param = new URLSearchParams(url);
+    let api = param.get("api");
+    fetch(api)
+      .then((response) => response.json())
+      .then((jsonData) => {
+        var abcd = jsonData
+
+let data = []
+let maxx = []
+for(i=0; i < abcd.resultList.length; i++){
+const maxvalue = abcd.resultList[i].per_mnt_hrt_rt_cnt_max;
+const minvalue = abcd.resultList[i].per_mnt_hrt_rt_cnt_min;
+maxx.push(maxvalue)
+data.push([maxvalue,minvalue])
+}
+console.log(data)
+let maxxvalue = Number.NEGATIVE_INFINITY; // 0을 제외한 가장 작은 값으로 초기화
+
+for (let i = 0; i < maxx.length; i++) {
+  if (maxx[i] !== 0 && maxx[i] > maxxvalue) { // 0이 아니면서 현재까지의 최댓값보다 크면
+    maxxvalue = maxx[i]; // 최댓값 갱신
+  }
+}
+let nextMultiple = nextMultipleOf20(maxxvalue+4);
+function nextMultipleOf20(maxxvalue) {
+  if (maxxvalue % 20 === 0) {
+    return maxxvalue + 20;
+  } else {
+    return Math.ceil(maxxvalue / 20) * 20;
+  }
+}
+
+function convertToDict(data) {
+  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  const data_dict = {};
+  
+  for(let i = 0; i < data.length; i++) {
+    const dayOfWeek = daysOfWeek[i];
+    const max = data[i][0];
+    const min = data[i][1];
+    
+    data_dict[`${dayOfWeek}Max`] = max;
+    data_dict[`${dayOfWeek}Min`] = min;
+  }
+  
+  return data_dict;
+}
+
+      
+
+  const data_dict = convertToDict(data);
+
+
+        var canvas = document.getElementById("myChart");
+        var myChart = new Chart(canvas, {
+          type: "bar",
+          //plugins:[ChartDataLabels],
+          data: {
+            labels: ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"],
+            datasets: [
+              {
+                backgroundColor: "#DC3535",
+                borderColor: "#DC3535",
+                label: "max, min",
+                stack: "Group 1",
+                borderWidth: 2,
+                borderRadius: 80,//Number.MAX_VALUE
+                borderSkipped: false,
+                
+                data: data 
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              legend: {
+      display: false // label을 숨길 수 있는 옵션입니다. plugins에 감싸야함 최신버전
+    },
+              annotation: {
+                draggable: true, // 주석을 드래그할 수 있도록 설정
+                drawTime: 'afterDatasetsDraw',
+                    annotations: [      
+                                 
+                                  {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '월요일',
+                                    yValue: data_dict['mondayMin']-4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'blue',
+                                    content: [data_dict['mondayMin']]
+                                  }, {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '월요일',
+                                    yValue: data_dict['mondayMax']+4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'red',
+                                    content: [data_dict['mondayMax']]
+                                  },
+                                  {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '화요일',
+                                    yValue: data_dict['tuesdayMin']-4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'blue',
+                                    content: [data_dict['tuesdayMin']]
+                                  }, {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '화요일',
+                                    yValue: data_dict['tuesdayMax']+4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'red',
+                                    content: [data_dict['tuesdayMax']]
+                                  },
+                                  {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '수요일',
+                                    yValue: data_dict['wednesdayMin']-4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'blue',
+                                    content: [data_dict['wednesdayMin']]
+                                  }, {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '수요일',
+                                    yValue: data_dict['wednesdayMax']+4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'red',
+                                    content: [data_dict['wednesdayMax']]
+                                  },
+                                  {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '목요일',
+                                    yValue: data_dict['thursdayMin']-4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                   // color : 'blue',
+                                    content: [data_dict['thursdayMin']]
+                                  }, {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '목요일',
+                                    yValue: data_dict['thursdayMax']+4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'red',
+                                    content: [data_dict['thursdayMax']]
+                                  },
+                                  {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '금요일',
+                                    yValue: data_dict['fridayMin']-4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'blue',
+                                    content: [ data_dict['fridayMin']]
+                                  }, {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '금요일',
+                                    yValue: data_dict['fridayMax']+4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'red',
+                                    content: [data_dict['fridayMax']]
+                                  },
+                                  {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '토요일',
+                                    yValue: data_dict['saturdayMin']-4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'blue',
+                                    content: [ data_dict['saturdayMin']]
+                                  }, {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '토요일',
+                                    yValue: data_dict['saturdayMax']+4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'red',
+                                    content: [data_dict['saturdayMax']]
+                                  },
+                                  {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '일요일',
+                                    yValue: data_dict['sundayMin']-4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'blue',
+                                    content: [ data_dict['sundayMin']]
+                                  }, {
+                                    type: 'label',
+                                    xScaleID: 'x',
+                                    yScaleID: 'y',
+                                    xValue: '일요일',
+                                    yValue: data_dict['sundayMax']+4,
+                                    borderColor: 'rgb(255, 0, 0)',
+                                    borderWidth: 0,
+                                    font: {
+                                      size : 20
+                                    },
+                                    fontStyle: 'bold',
+                                    //color : 'red',
+                                    content: [ data_dict['sundayMax']]
+                                  }
+                    ].filter(label => {
+                        
+                        if (label.yValue != 4) {
+                          return true;
+                        } 
+                        return false;
+                        }
+                        
+                        ), 
+                      },
+              },
+            scales: {
+              x: {
+                grid: {
+                  display: false,
+                },
+              },
+              y: {
+                grid: {
+                  tickBorderDashOffset: 5,
+                  tickBorderDash: [5, 5],
+                },
+                min: 0,
+                max: nextMultiple,
+                ticks:{
+                stepSize: 20
+                },
+              },
+            },
+            barPercentage: 0.6,
+  		categoryPercentage: 0.8
+          },
+          
+        });
+
+      });
+
+      
+
+
+      
+    </script>
+  </body>
+</html>

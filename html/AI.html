@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  <title>메인</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+  <link href="../assets/css/style.css" rel="stylesheet">
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script src="https://code.highcharts.com/modules/variwide.js"></script>
+
+</head>
+
+<body>
+  <div id="wrap">
+    <div class="swiper" id="main">
+      <div class="swiper-wrapper">
+        <section class="swiper-slide page">
+          <div class="head-nav">
+            <div></div>
+            <div>
+              <h1 class="page-title">Dashboard</h1>
+            </div>
+            <div>
+              <a href="./device_add.html" class="add-device">
+                <span class="material-icons-outlined">
+                  add_circle_outline
+                </span>
+              </a>
+            </div>
+          </div>
+          <div class="container">
+            <div class="box">
+              <div class="box-tit"><span class="material-icons-outlined fc1">
+                  cell_tower
+                </span>실시간 감지</div>
+              <div class="box-con">
+                <div class="swiper" id="now_state">
+                  <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                      <div class="now-state">
+                        <div class="name">홍길동</div>
+                        <dl>
+                          <dt>상태</dt>
+                          <dd>
+                            <span class="label1">늦잠</span>
+                          </dd>
+                        </dl>
+                        <dl>
+                          <dt>분당 심박수(bpm)</dt>
+                          <dd class="bpm-value">70회</dd>
+                          <dd class="chart" id="chart1_1"></dd>
+                        </dl>
+                        <dl>
+                          <dt>분당 호흡수(brpm)</dt>
+                          <dd class="brpm-value">16회</dd>
+                          <dd class="chart" id="chart1_2"></dd>
+                        </dl>
+                      </div>
+                    </div>
+                    <div class="swiper-slide">
+                      <div class="now-state">
+                        <div class="name">기기명2</div>
+                        <dl>
+                          <dt>상태</dt>
+                          <dd>
+                            <span class="label8">연결끊김</span>
+                          </dd>
+                        </dl>
+                        <dl>
+                          <dt>분당 심박수(bpm)</dt>
+                          <dd class="bpm-value">-</dd>
+                          <dd class="chart null">
+                            <span class="material-icons-outlined">
+                              wifi_off
+                            </span>
+                            <div>신호가 없습니다.</div>
+                          </dd>
+                        </dl>
+                        <dl>
+                          <dt>분당 호흡수(brpm)</dt>
+                          <dd class="brpm-value">-</dd>
+                          <dd class="chart null">
+                            <span class="material-icons-outlined">
+                              wifi_off
+                            </span>
+                            <div>신호가 없습니다.</div>
+                          </dd>
+                        </dl>
+                      </div>
+                    </div>
+                    <div class="swiper-slide">
+                      <div class="now-state">
+                        <div class="name">기기명3</div>
+                        <dl>
+                          <dt>상태</dt>
+                          <dd>
+                            <span class="label3">야간활동</span>
+                          </dd>
+                        </dl>
+                        <dl>
+                          <dt>분당 심박수(bpm)</dt>
+                          <dd class="bpm-value">70회</dd>
+                          <dd class="chart" id="chart3_1"></dd>
+                        </dl>
+                        <dl>
+                          <dt>분당 호흡수(brpm)</dt>
+                          <dd class="brpm-value">16회</dd>
+                          <dd class="chart" id="chart3_2"></dd>
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="swiper-pagination"></div>
+                </div>
+              </div>
+            </div>
+            <div class="box">
+              <div class="box-tit alert">
+                <span class="material-icons-outlined fc5">
+                  campaign
+                </span>
+                최근 경고
+              </div>
+              <div class="box-con">
+                <ul class="alert-list">
+                  <li>
+                    <div class="alert-tit">지역이탈 (홍길동)</div>
+                    <p>대상이 기기가 탐지하는 지역을 이탈하였습니다. 대상이 기기가 탐지하는 지역을 이탈하였습니다. 대상이 기기가 탐지하는 지역을 이탈하였습니다.</p>
+                    <span>2023-02-01 22:15:40</span>
+                  </li>
+                </ul>
+              </div>
+              <a href="./alert_detail.html" class="btn-more">전체보기</a>
+            </div>
+            <div class="box">
+              <div class="box-tit alarm">
+                <span class="material-icons-outlined fc6">
+                  notifications_none
+                </span>
+                최근 알림
+              </div>
+              <div class="box-con">
+                <ul class="alert-list">
+                  <li class="null">
+                    최근 알림내역이 없습니다.
+                  </li>
+                </ul>
+              </div>
+              <a href="./alert_detail.html" class="btn-more">전체보기</a>
+            </div>
+          </div>
+
+
+        </section>
+        <section class="swiper-slide page">
+          <div class="head-nav">
+            <div></div>
+            <div>
+              <select name="" id="" class="select">
+                <option value="">홍길동</option>
+                <option value="">기기명2</option>
+                <option value="">기기명3</option>
+              </select>
+            </div>
+            <div>
+              <a href="./device_add.html" class="add-device">
+                <span class="material-icons-outlined">
+                  add_circle_outline
+                </span>
+              </a>
+            </div>
+          </div>
+          <div class="container">
+            <div class="box" style="background-color:#477dc187">
+              <p style="color:#222;font-size:14px;">호흡수와 심박수는 신체의 전반적인 건강과 기능에 대한 정보를 제공할 수 있는 중요한 생리학적 매개변수이나 전반적인 건강과
+                웰빙을 평가하는 데
+                있어 퍼즐의 한 조각일 뿐이라는 점에 유의하는 것이 중요합니다.[건강신호]에서는 빅테이터 분석을 통해 호흡수와 심박수로 추론가능한 의학적 신호를 제공합니다. 주의신호가 나타난 경우
+                병원진료를 권장합니다.
+              </p>
+            </div>
+            <div class="box">
+              <div class="box-tit">홍길순</div>
+              <div class="box-con">
+                <ul class="stat-list">
+                  <li>
+                    <b>갑상선저하</b>
+                    <span class="stat">
+                      <span class="on">징후없음</span>
+                    </span>
+                  </li>
+                  <li>
+                    <b>천식</b>
+                    <span class="stat">
+                      <span class="warning">관심</span>
+                    </span>
+                  </li>
+                  <li>
+                    <b>폐렴</b>
+                    <span class="stat">
+                      <span class="warning">관심</span>
+                    </span>
+                  </li>
+                  <li>
+                    <b>울혈성 심부전</b>
+                    <span class="stat">
+                      <span class="off">주의</span>
+                    </span>
+                  </li>
+                  <li>
+                    <b>부정맥</b>
+                    <span class="stat">
+                      <span class="off">주의</span>
+                    </span>
+                  </li>
+
+
+
+                </ul>
+              </div>
+            </div>
+
+            <div class="box">
+              <div class="box-tit">홍길동</div>
+              <div class="box-con">
+                <ul class="stat-list">
+                  <li>
+                    <b>갑상선저하</b>
+                    <span class="stat">
+                      <span class="on">징후없음</span>
+                    </span>
+                  </li>
+                  <li>
+                    <b>천식</b>
+                    <span class="stat">
+                      <span class="on">징후없음</span>
+                    </span>
+                  </li>
+                  <li>
+                    <b>폐렴</b>
+                    <span class="stat">
+                      <span class="on">징후없음</span>
+                    </span>
+                  </li>
+                  <li>
+                    <b>울혈성 심부전</b>
+                    <span class="stat">
+                      <span class="on">징후없음</span>
+                    </span>
+                  </li>
+                  <li>
+                    <b>부정맥</b>
+                    <span class="stat">
+                      <span class="on">징후없음</span>
+                    </span>
+                  </li>
+
+
+
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="swiper-slide page">
+          <div class="head-nav">
+            <div></div>
+            <div>
+              <h1 class="page-title">Device</h1>
+            </div>
+            <div>
+              <a href="./device_add.html" class="add-device">
+                <span class="material-icons-outlined">
+                  add_circle_outline
+                </span>
+              </a>
+            </div>
+          </div>
+          <div class="container">
+            <div class="box">
+              <div class="box-tit">등록기기</div>
+              <div class="box-con">
+                <div class="device-list">
+                  <a href="device_detail.html">
+                    <div class="stat"><b>연결상태</b><span class="on">연결됨</span></div>
+                    <div class="name"><b>기기명</b> <span>홍길동</span></div>
+                    <div class="contact"><b>긴급연락처</b> <span>홍길순 (010-1234-4567)</span></div>
+                  </a>
+                  <a href="device_detail.html">
+                    <div class="stat"><b>연결상태</b><span class="off">응답없음</span></div>
+                    <div class="name"><b>기기명</b> <span>기기명2</span></div>
+                    <div class="contact"><b>긴급연락처</b> <span>미등록</span></div>
+                  </a>
+                  <a href="device_detail.html">
+                    <div class="stat"><b>연결상태</b><span class="on">연결됨</span></div>
+                    <div class="name"><b>기기명</b> <span>기기명3</span></div>
+                    <div class="contact"><b>긴급연락처</b> <span>홍길순 (010-1234-4567)</span></div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="swiper-slide page">
+          <div class="head-nav">
+            <div></div>
+            <div>
+              <h1 class="page-title">Setting</h1>
+            </div>
+            <div></div>
+          </div>
+          <div class="container">
+            <div class="box">
+              <div class="box-tit">사용자 설정</div>
+              <div class="box-con">
+                <ul class="device-state">
+                  <li>
+                    <b>이메일</b>
+                    <span>
+                      abc@safekorea.co.kr
+                      <button type="button" class="btn btn1">
+                        <span class="material-icons-outlined">
+                          edit
+                        </span>
+                      </button>
+                    </span>
+                  </li>
+                  <li>
+                    <b>긴급연락처 등록</b>
+                    <span>
+                      <button type="button" class="btn btn1">
+                        <span class="material-icons-outlined">
+                          post_add
+                        </span>
+                      </button>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="box">
+              <div class="box-tit">기본 알림설정</div>
+              <div class="box-con">
+                <ul class="alert-settting">
+                  <li>
+                    <b>늦잠알림</b>
+                    <span>
+                      <input type="checkbox" class="toggle" id="tg_1">
+                      <label for="tg_1"></label>
+                    </span>
+                  </li>
+                  <li>
+                    <b>생체신호없음</b>
+                    <span>
+                      <input type="checkbox" class="toggle" id="tg_2" checked="checked">
+                      <label for="tg_2"></label>
+                    </span>
+                  </li>
+                  <li>
+                    <b>야간활동</b>
+                    <span>
+                      <input type="checkbox" class="toggle" id="tg_3" checked="checked">
+                      <label for="tg_3"></label>
+                    </span>
+                  </li>
+                  <li>
+                    <b>넘어짐</b>
+                    <span>
+                      <input type="checkbox" class="toggle" id="tg_4">
+                      <label for="tg_4"></label>
+                    </span>
+                  </li>
+                  <li>
+                    <b>탐지지역 이탈</b>
+                    <span>
+                      <input type="checkbox" class="toggle" id="tg_5" checked="checked">
+                      <label for="tg_5"></label>
+                    </span>
+                  </li>
+                  <li>
+                    <b>이상수면</b>
+                    <span>
+                      <input type="checkbox" class="toggle" id="tg_6" checked="checked">
+                      <label for="tg_6"></label>
+                    </span>
+                  </li>
+
+                </ul>
+              </div>
+            </div>
+            <div class="box">
+              <div class="box-tit">고객지원</div>
+              <div class="box-con">
+                <ul class="device-state">
+                  <li>
+                    <b>사용문의</b>
+                    <span>info@safekorea.co.kr</span>
+                  </li>
+                  <li>
+                    <b>매뉴얼</b>
+                    <span>
+                      <a href="#" class="btn btn1">PDF 다운로드</a>
+                    </span>
+                  </li>
+                  <li>
+                    <b>개인정보처리방침</b>
+                    <span>
+                      <a href="#" class="btn btn1">자세히보기</a>
+                    </span>
+                  </li>
+                  <li>
+                    <b>앱버전</b>
+                    <span>V02.00.00.29</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="btn-box">
+              <button type="button" class="btn">회원탈퇴</button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div id="page-nav"></div>
+    </div>
+    <!-- <div class="layer-popup-wrap">
+      <div class="layer-popup" data-layer="add-device">
+        <div class="head-nav">
+          <div>
+            <h2 class="page-title"></h1>
+          </div>
+          <div>
+
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <!-- script -->
+  <!-- <script src="../assets/js/jquery-3.6.1.min.js"></script> -->
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+  <!-- Initialize Swiper -->
+
+  <script src="../assets/js/publish.js"></script>
+  <!-- //script -->
+</body>
+
+</html>

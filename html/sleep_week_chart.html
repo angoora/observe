@@ -1,0 +1,126 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0"></script>
+    <title>수면_주_차트</title>
+  </head>
+  <body>
+    <!-- ?api=http://121.78.115.81:8180/api/chart/slp-stt/week?search_date=2023-03-02 -->
+    <canvas id="myChart" style="position:fixed;left:0;top:0;bottom:0;width:100%;height:100%;z-index:9999;"></canvas>
+    <script> 
+  let url = window.location.search;
+    let param = new URLSearchParams(url);
+    let api = param.get("api");
+    fetch(api)
+      .then((response) => response.json())
+      .then((jsonData) => {
+        var aa = jsonData
+
+let deep_sleep = []
+let rem_sleep = []
+let light_sleep = []
+let non_sleep = []
+for(i=0; i < aa.resultList.length; i++)
+{
+  const dhours = aa.resultList[i].deep_sleep_hour;
+  const dminutes = aa.resultList[i].deep_sleep_minute;
+  const dtime = dhours + dminutes/60;
+  deep_sleep.push(dtime.toFixed(2))
+
+  const rhours = aa.resultList[i].rem_sleep_hour;
+  const rminutes = aa.resultList[i].rem_sleep_minute;
+  const rtime = rhours + rminutes/60;
+  rem_sleep.push(rtime.toFixed(2))
+
+  const lhours = aa.resultList[i].light_sleep_hour;
+  const lminutes = aa.resultList[i].light_sleep_minute;
+  const ltime = lhours + lminutes/60;
+  light_sleep.push(ltime.toFixed(2))
+
+  const nhours = aa.resultList[i].non_sleep_hour;
+  const nminutes = aa.resultList[i].non_sleep_minute;
+  const ntime = nhours + nminutes/60;
+  non_sleep.push(ntime.toFixed(2))
+}
+
+console.log(light_sleep);
+var ctx = document.getElementById("myChart");
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['월요일','화요일','수요일','목요일','금요일','토요일','일요일'],
+        datasets: [{
+            backgroundColor: "#FFE8A3",
+				    borderColor: "#FFE8A3",
+            label: '깨어있음',
+            stack: "Group 1",
+            data: non_sleep,
+            
+        },{
+            backgroundColor: "#CD9EFF",
+				    borderColor: "#CD9EFF",
+            stack: "Group 1",
+            label: '렘수면',
+            data: rem_sleep
+        },{
+            backgroundColor: "#BAADFF",
+				    borderColor: "#BAADFF",
+            stack: "Group 1",
+            label: '얕은수면',
+            data: light_sleep
+        },{
+            backgroundColor: "#BBD0FF",
+				    borderColor: "#BBD0FF",
+            stack: "Group 1",
+            label: '깊은수면',
+            data: deep_sleep
+        }]
+    },
+    options: {
+      animation: {
+        duration: 0
+    },
+      plugins:{
+        legend:{
+          labels:{
+            font:{
+              size: 30
+            }
+          }
+      }
+    },
+        scales: {
+                x: {
+                  ticks: {
+          font: {
+            size: 30 // x축 labels의 폰트 사이즈 조정
+          }
+        },
+        stacked: true,
+        
+        grid: {
+           display: false
+        }
+      },
+      y: {
+        ticks: {
+          font: {
+            size: 30
+          }
+        },
+        stacked: true,
+        grid: {
+            tickBorderDashOffset: 5,
+            tickBorderDash: [5,5]
+        }
+      }
+    }
+       
+    }
+  }
+
+);
+      });
+      
+    </script>
+  </body>
+</html>

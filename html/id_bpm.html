@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Heart Rate Chart with Chart.js</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <canvas id="myChart2" style="height:200px;"></canvas>
+  <script>
+    //심박호흡
+    const device = '133601115048573533380F5405';
+    const email = 'consultant0392@gmail.com';
+    function liveChart(device, email) {
+      fetch(`http://121.78.115.103:8180/api/hrtRspr/selectListHrtRsprCnt?radar_id=${device}&limit=30&user_email=${email}`)
+        .then(response => response.json())
+        .then(data => {
+          let chart, dataSet, dateSet2;
+          if (data.success === true) {
+            dataSet = data.resultListHrt.map(item => item.per_mnt_hrt_rt_cnt).reverse();
+            dataSet2 = data.resultListRspr.map(item => item.per_mnt_rspr_cnt).reverse();
+            // 차트 생성
+
+            var ctx = document.getElementById('myChart2').getContext('2d');
+            Chart.defaults.font.size = 10;
+
+            chart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],
+                datasets: [{
+                  label: '',
+                  data: dataSet,
+                  backgroundColor: '#fff',
+                  borderColor: '#DC3535',
+                  borderWidth: 2,
+                  pointRadius: 0,
+                }, {
+                  label: '',
+                  data: dataSet2,
+                  backgroundColor: '#fff',
+                  borderColor: '#68B984',
+                  borderWidth: 2,
+                  pointRadius: 0,
+                }
+                ]
+              },
+              options: {
+                animation: false,
+                plugins: {
+                  legend: {
+                    display: false,
+                  }
+                },
+                scales: {
+                  y: {
+                    min: 0,
+                    max: 120,
+                    ticks: {
+                      stepSize: 10
+                    }
+                  }
+                }
+              }
+            });
+          }
+          function drawChart() {
+            fetch(`http://121.78.115.103:8180/api/hrtRspr/selectListHrtRsprCnt?radar_id=${device}&limit=30&user_email=${email}`)
+              .then(response => response.json())
+              .then(data => {
+                if (data.success === true) {
+                  dataSet = data.resultListHrt.map(item => item.per_mnt_hrt_rt_cnt).reverse();
+                  dataSet2 = data.resultListRspr.map(item => item.per_mnt_rspr_cnt).reverse();
+                  chart.data.datasets[0].data = dataSet;
+                  chart.data.datasets[1].data = dataSet2;
+                  console.log(dataSet[dataSet.length - 1], '/', dataSet2[dataSet2.length - 1]);
+                  chart.update(); // 차트 업데이트
+                }
+              }).catch(error => console.error(error));
+          }
+          setInterval(function () {
+            drawChart();
+          }, 10000)
+        }).catch(error => console.error(error));
+    }
+
+    liveChart(device, email);
+
+  </script>
+</body>
+
+</html>

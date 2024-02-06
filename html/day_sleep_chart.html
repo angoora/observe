@@ -1,0 +1,194 @@
+<html>
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+  <title>라인플롯차트테스트</title>
+</head>
+
+<body>
+
+  <canvas id="myChart" style="position:fixed;left:0;top:0;bottom:0;width:100%;height:100%;z-index:9999;"></canvas>
+
+  <script>
+    // 데이터 -> floating bar chart 형태로 변환하는 함수
+    function transformData(data) {
+      return data.map((d) => ({ x: d.x, y: [d.y - 0.5, d.y + 0.5] }));
+    }
+    function extractLabelsFromData(data) {
+      return data.map((d) => d.x);
+    }
+    // data 배열의 각 객체에서 y 값에 해당하는 backgroundColor의 key로 들어간 value의 리스트를 반환하는 함수
+    function getBackgroundColors(data, backgroundColor) {
+      const backgroundColors = [];
+      for (const obj of data) {
+        const value = obj.y;
+        const color = backgroundColor[value];
+        if (color !== undefined) {
+          backgroundColors.push(color);
+        }
+      }
+      return backgroundColors;
+    }
+
+    // json으로 fetch한 데이터를 기존 개발하던 chart data Array 형태로 변환하는 함수
+    function convertData(json_data) {
+      const resultList = json_data.resultList;
+      const chart_data_format = resultList.map((obj) => {
+        const date = new Date(obj.tochar_datetime);
+        const value = obj.slp_stt;
+        return { x: date, y: value };
+      });
+      return chart_data_format;
+    }
+
+    let bar_backgroundColor = {
+      1: "rgba(53, 49, 185, 1)",
+      3: "rgba(0, 67, 216, 1)",
+      5: "rgba(8, 111, 158, 1)",
+      7: "rgba(220, 56, 0, 1)",
+    };
+
+    let url = window.location.search;
+    let param = new URLSearchParams(url);
+    let api = param.get("api");
+    fetch(api)
+      .then((response) => response.json())
+      .then((jsonData) => {
+        let data = convertData(jsonData);
+
+        const backgroundColors = getBackgroundColors(
+          data,
+          bar_backgroundColor
+        );
+
+        var ctx1 = document.getElementById("myChart").getContext("2d");
+        const background_color = ["#FFF4D2", "#E5D1FA", "#E3DFFD", "#ECF2FF"];
+        // const background_color=["#FFFFFF", "#FFFFFF", "#FFFFFF","#FFFFFF"]
+        const plugin = {
+          id: "customCanvasBackgroundColor",
+          beforeDraw: (chart, args, options) => {
+            const { ctx } = chart;
+            ctx.save();
+            ctx.globalCompositeOperation = "destination-over";
+
+            // x축 왼쪽 끝 가져오기
+            const xAxisLeftEnd = chart.chartArea.left;
+
+            // x축 오른쪽 끝 가져오기
+            const xAxisRightEnd = chart.chartArea.right;
+
+            // y축 위쪽 끝 가져오기
+            const yAxisTopEnd = chart.chartArea.top;
+
+            // y축 아래쪽 끝 가져오기
+            const yAxisBottomEnd = chart.chartArea.bottom;
+            const rectX = xAxisLeftEnd;
+            const rectY = yAxisTopEnd;
+            const rectWidth = xAxisRightEnd - xAxisLeftEnd;
+            const rectHeight = yAxisBottomEnd - yAxisTopEnd;
+
+            for (var i = 0; i < 4; i++) {
+              ctx.fillStyle = options.color || background_color[i];
+              ctx.fillRect(
+                rectX,
+                rectY,
+                rectWidth,
+                (rectHeight / 4) * (i + 1)
+              );
+            }
+            ctx.restore();
+          },
+        };
+        var myChart1 = new Chart(ctx1, {
+          type: "bar",
+          data: {
+            labels: extractLabelsFromData(data),
+            datasets: [
+              {
+                label: "Floating Bar",
+                barPercentage: 1,
+                categoryPercentage: 1,
+                borderRadius: 0,
+                borderSkipped: false,
+                backgroundColor: backgroundColors,
+                borderColor: backgroundColors,
+                borderWidth: 1,
+                data: transformData(data),
+                order: 1,
+              },
+              {
+                label: "Stepped Line",
+                backgroundColor: "#36A2EB",
+                data: data,
+                type: "line",
+                fill: false,
+                stepped: "middle",
+                order: 2,
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            animation: false,
+            scales: {
+              x: {
+                border: {},
+                grid: {
+                  display: true,
+                },
+                ticks: {
+                  font: {
+                    size: 30,
+                  },
+                },
+                type: "time",
+                time: {
+                  unit: "hour",
+                  //unit: "minute",
+                  displayFormats: {
+                    hour: 'HH:mm'
+                  }
+                },
+              },
+              y: {
+                grid: {
+                  display: false,
+                },
+                ticks: {
+                  stepSize: 1,
+                  font: {
+                    size: 40,
+                  },
+                  // Include a dollar sign in the ticks
+                  callback: function (value, index, ticks) {
+                    var labels = {
+                      1: "깊은수면",
+                      3: "얕은수면",
+                      5: "렘수면",
+                      7: "깨어있음",
+                    };
+                    return labels[value];
+                  },
+                },
+              },
+            },
+            plugins: {
+              tooltip: {
+                enabled: false,
+              },
+              legend: {
+                display: false,
+              },
+            },
+          },
+          plugins: [plugin],
+        });
+      }); // fetch
+
+  </script>
+</body>
+
+</html>

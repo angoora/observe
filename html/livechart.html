@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Heart Rate Chart with Chart.js</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    #smk-chart-wrap.no-signal:after {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: #f4f4f4;
+      z-index: 1;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      color: #999;
+      font-size: 20px;
+      font-weight: 500;
+      content: '신호없음';
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="smk-bpm">-</div>
+  <div id="smk-brpm">-</div>
+  <div id="smk-chart-wrap" style="position:relative;width:100%;height:0;padding-top:56%">
+    <canvas id="smk-chart" style="position:absolute;left:0;top:0;bottom:0;width:100%;height:100%;"></canvas>
+  </div>
+
+  <script>
+    // 심박수 데이터 생성
+    function generateData() {
+      var data = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
+      return data;
+    }
+
+    // 차트 생성
+    var ctx = document.getElementById('smk-chart').getContext('2d');
+    Chart.defaults.font.size = 10;
+    var chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],
+        datasets: [{
+          label: '',
+          data: generateData(),
+          backgroundColor: '#fff',
+          borderColor: '#DC3535',
+          borderWidth: 2,
+          pointRadius: 0,
+        }, {
+          label: '',
+          data: generateData(),
+          backgroundColor: '#fff',
+          borderColor: '#68B984',
+          borderWidth: 2,
+          pointRadius: 0,
+        }]
+      },
+      options: {
+        animation: true,
+        plugins: {
+          legend: {
+            display: false,
+          }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+    // http://192.168.0.14:8080/api/hrtRspr/selectHrtCnt
+    const chartWrap = document.getElementById('smk-chart-wrap');
+    const bpm = document.getElementById('smk-bpm');
+    const brpm = document.getElementById('smk-brpm');
+    function drawChart() {
+      // let url = window.location.search;
+      // let param = new URLSearchParams(url);
+      // let api = param.get("api");
+      // safekorea.us@gmail.com
+      // "dvc_uuid": "133601115048573533380F7843"
+      fetch('http://121.78.115.103:8180/api/hrtRspr/selectListHrtRsprCnt?limit=1&radar_id=133601115048573533380F7843&user_email=safekorea.us@gmail.com')
+        .then(response => response.json())
+        .then(data => {
+          if (data.selectHrtRsprTime.time_gap == "true") {
+            chart.data.datasets[0].data.shift(); // 가장 오래된 데이터 제거
+            chart.data.datasets[0].data.push(data.resultListHrt[0].per_mnt_hrt_rt_cnt); // 새로운 데이터 추가
+            chart.data.datasets[1].data.shift(); // 가장 오래된 데이터 제거
+            chart.data.datasets[1].data.push(data.resultListRspr[0].per_mnt_rspr_cnt); // 새로운 데이터 추가
+            chart.update(); // 차트 업데이트
+            bpm.innerText = data.resultListHrt[0].per_mnt_hrt_rt_cnt;
+            brpm.innerText = data.resultListRspr[0].per_mnt_rspr_cnt;
+          } else {
+            chartWrap.classList.add('no-signal');
+            bpm.innerText = 'No Signal';
+            brpm.innerText = 'No Signal';
+          }
+        }).catch(error => console.error(error));
+    }
+
+    drawChart();
+    setInterval(function () {
+      drawChart();
+    }, 5000)
+  </script>
+</body>
+
+</html>

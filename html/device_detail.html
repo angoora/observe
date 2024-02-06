@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
+  <title>회원가입</title>
+  <link href="../assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div id="wrap">
+    <div class="page">
+      <div class="head-nav">
+        <div>
+          <a href="./main.html" class="prev-page">
+            <span class="material-icons-outlined">
+              arrow_back_ios
+            </span>
+          </a>
+        </div>
+        <div>
+          <h1 class="page-title">기기설정</h1>
+        </div>
+        <div></div>
+      </div>
+      <div class="container">
+        <div class="box">
+          <div class="box-tit">기기정보</div>
+          <div class="box-con">
+            <ul class="device-state">
+              <li>
+                <b>기기상태</b>
+                <span><span class="heart">심박수(65)</span> / <span class="breath">호흡수(16)</span></span>               
+              </li>
+              <li>
+                <b>기기이름</b>
+                <span>                  
+                  F7626
+                  <button type="button" class="btn btn1">
+                    <span class="material-icons-outlined">
+                      edit
+                    </span>
+                  </button>
+                </span>
+              </li>
+              <li>
+                <b>긴급연락처</b>
+                <span>홍길순 (010-1234-4567)
+                  <button type="button" class="btn btn1">
+                    <span class="material-icons-outlined">
+                      edit
+                    </span>
+                  </button>
+                </span>               
+              </li>
+              <li>
+                <b>시리얼넘버</b>
+                <span>133601115048573</span>
+              </li>
+              <li>
+                <b>펌웨어버전</b>
+                <span>V02.00.00.29</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="box">
+          <div class="box-tit">알림설정</div>
+          <div class="box-con">
+            <ul class="alert-settting">
+              <li>
+                <b>늦잠알림</b>
+                <span>
+                  <input type="checkbox" class="toggle" id="tg_1">
+                  <label for="tg_1"></label>
+                </span>
+              </li>
+              <li>
+                <b>생체신호없음</b>
+                <span>
+                  <input type="checkbox" class="toggle" id="tg_2" checked="checked">
+                  <label for="tg_2"></label>
+                </span>
+              </li>
+              <li>
+                <b>야간활동</b>
+                <span>
+                  <input type="checkbox" class="toggle" id="tg_3" checked="checked">
+                  <label for="tg_3"></label>
+                </span>
+              </li>
+              <li>
+                <b>넘어짐</b>
+                <span>
+                  <input type="checkbox" class="toggle" id="tg_4">
+                  <label for="tg_4"></label>
+                </span>
+              </li>
+              <li>
+                <b>탐지지역 이탈</b>
+                <span>
+                  <input type="checkbox" class="toggle" id="tg_5" checked="checked">
+                  <label for="tg_5"></label>
+                </span>
+              </li>
+              <li>
+                <b>이상수면</b>
+                <span>
+                  <input type="checkbox" class="toggle" id="tg_6" checked="checked">
+                  <label for="tg_6"></label>
+                </span>
+              </li>
+             
+            </ul>
+          </div>
+        </div>
+        <div class="btn-box">
+          <button type="button" class="btn">삭제</button>
+        </div>
+      </div>
+    </div>
+    <!-- login -->
+  </div>
+  <!-- script -->
+  <!-- <script src="../assets/js/jquery-3.6.1.min.js"></script> -->
+  <script src="../assets/js/publish.js"></script>
+  <!-- //script -->
+</body>
+
+</html>

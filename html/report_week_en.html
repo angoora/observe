@@ -1,0 +1,772 @@
+<html>
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <!-- <script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script> -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.4.0/chartjs-plugin-annotation.min.js"></script>
+  <!-- <script src="https://unpkg.com/chartjs-plugin-annotation-draggable"></script> -->
+
+  <title>주 분석결과</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+  <style>
+    body {
+      background-color: #f0f0f0;
+    }
+
+    #wrapper {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f0f0f0;
+    }
+
+    .box {
+      box-sizing: border-box;
+      background-color: #fff;
+      box-shadow: 0 1.3vw 3.8vw 0 #5555554d;
+      font-size: 4.2vw;
+      line-height: 7.3vw;
+      margin-top: 3.9vw;
+      margin: 0 3.9vw 3.9vw;
+      border-radius: 2.6vw;
+      padding: 5.2vw;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .label {display:inline-block;width:32vw;border-radius:1.5vw;color:#fff;background-color:#222;text-align:center;}
+    .box:first-of-type {
+      margin-top: 3.9vw;
+    }
+
+    .box:last-of-type {
+      margin-bottom: 5.1vw;
+    }
+
+    .box .tit {
+      font-size: 4.73vw;
+      font-weight: bold;
+      color: #477DC1;
+      margin-bottom: 2.63vw;
+    }
+
+    .chart {
+      flex: 1;
+      width: 100%;
+    }
+
+    /* .chart-scroll {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      overflow-x: scroll;
+      overflow-y: hidden;
+    } */
+
+
+    /* .chart-scroll .chart {
+      flex: 1;
+      width: 150% !important;
+    } */
+
+    .dict {
+      flex: none;
+      margin-top: 3vw;
+    }
+
+    .dict dl {
+      margin-top: 1vw;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+    }
+
+    .dict dt {
+      color: #888;
+    }
+
+    .dict dd {
+      color: #000;
+    }
+
+    #wrapper .color1 {
+      background-color: #8CB7F6;
+    }
+
+    #wrapper .color2 {
+      background-color: #7DD6FE;
+    }
+
+    #wrapper .color3 {
+      background-color: #B6E45A;
+    }
+
+    #wrapper .color4 {
+      background-color: #FCA964;
+    }
+
+    #wrapper .color5 {
+      color: #3EE6BA;
+    }
+
+    #wrapper .red {
+      color: #DC3535;
+    }
+
+    #wrapper .green {
+      color: #68B984;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="wrapper">
+    <!-- 수면 -->
+    <div class="box" style="flex:1.5;">
+      <strong class="tit">Sleep Information</strong>
+      <canvas class="chart" id="myChart1"></canvas>
+      <div class="dict">
+        <dl>
+          <dt>Total Sleep</dt>
+          <dd><span id="total_sleep"></span></dd>
+        </dl>
+        <dl>
+          <dt><span class="label color4">Awake</span></dt>
+          <dd><span id="awake_sleep"></span></dd>
+        </dl>
+        <dl>
+          <dt><span class="label color3">Rem Sleep</span></dt>
+          <dd><span id="rem_sleep"></span></dd>
+        </dl>
+        <dl>
+          <dt><span class="label color2">Shallow Sleep</span></dt>
+          <dd ><span id="shallow_sleep"></span></dd>
+        </dl>
+        <dl>
+          <dt><span class="label color1">Deep Sleep</span></dt>
+          <dd><span id="deep_sleep"></span></dd>
+        </dl>
+      </div>
+    </div>
+    <!-- //수면 -->
+    <!-- 심박수 -->
+    <div class="box">
+      <strong class="tit">Heart Rate</strong>
+      <canvas class="chart" id="myChart2"></canvas>
+      <div class="dict">
+        <dl>
+          <dt>Average Heart Rate</dt>
+          <dd><span id="bpm_avg" class="red">-</span></dd>
+        </dl>
+        <dl>
+          <dt>Min-Max Heart Rate</dt>
+          <dd><span id="bpm_min_max"></span></dd>
+        </dl>
+      </div>
+    </div>
+    <!-- //심박수 -->
+    <!-- 호흡수 -->
+    <div class="box">
+      <strong class="tit">Respiratory Rate</strong>
+      <canvas class="chart" id="myChart3"></canvas>
+      <div class="dict">
+        <dl>
+          <dt>Average Respiratory Rate</dt>
+          <dd><span id="brpm_avg" class="green">-</span></dd>
+        </dl>
+        <dl>
+          <dt>Min-Max Respiratory Rate</dt>
+          <dd><span id="brpm_min_max"></span></dd>
+        </dl>
+      </div>
+    </div>
+    <!-- //호흡수 -->
+  </div>
+
+  <script>
+    //파라미터 받아오기 //url?device=####&date=####&email=####
+    let url = window.location.search;
+    let param = new URLSearchParams(url);
+    let date = param.get("date");
+    let device = param.get("device");
+    let email = param.get("email");
+
+    //주 수면 차트
+    fetch(`http://121.78.115.103:8180/api/chart/slp-stt/week?radar_id=${device}&search_date=${date}&user_email=${email}`)
+      .then((response) => response.json())
+      .then((jsonData) => {
+        var aa = jsonData;
+        
+        let deep_sleep = []
+        let rem_sleep = []
+        let light_sleep = []
+        let non_sleep = []
+        for(i=0; i < aa.resultList.length; i++)
+        {
+          const dhours = aa.resultList[i].deep_sleep_hour;
+          const dminutes = aa.resultList[i].deep_sleep_minute;
+          const dtime = dhours*60 + dminutes
+          deep_sleep.push(dtime)
+
+          const rhours = aa.resultList[i].rem_sleep_hour;
+          const rminutes = aa.resultList[i].rem_sleep_minute;
+          const rtime = rhours*60 + rminutes;
+          rem_sleep.push(rtime)
+
+          const lhours = aa.resultList[i].light_sleep_hour;
+          const lminutes = aa.resultList[i].light_sleep_minute;
+          const ltime = lhours*60 + lminutes;
+          light_sleep.push(ltime)
+
+          const nhours = aa.resultList[i].non_sleep_hour;
+          const nminutes = aa.resultList[i].non_sleep_minute;
+          const ntime = nhours*60 + nminutes;
+          non_sleep.push(ntime)
+        }
+
+        var ctx = document.getElementById("myChart1");
+        var myChart1 = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['MON', 'TUE', 'WED', 'THUR', 'FRI', 'SAT', 'SUN'],
+            datasets: [{
+              backgroundColor: "#8CB7F6",
+              borderColor: "#8CB7F6",
+              stack: "Group 1",
+              label: 'DEEP',
+              data: deep_sleep
+            }, {
+              backgroundColor: "#7DD6FE",
+              borderColor: "#7DD6FE",
+              stack: "Group 1",
+              label: 'SHALLOW',
+              data: light_sleep
+            }, {
+              backgroundColor: "#B6E45A",
+              borderColor: "#B6E45A",
+              stack: "Group 1",
+              label: 'REM',
+              data: rem_sleep
+            }, {
+              backgroundColor: "#FCA964",
+              borderColor: "#FCA964",
+              label: 'AWAKE',
+              stack: "Group 1",
+              data: non_sleep,
+
+            }]
+          },
+          options: {
+            animation: {
+              duration: 0
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  font: {
+                    size: 20
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                ticks: {
+                  font: {
+                    size: 20 // x축 labels의 폰트 사이즈 조정
+                  }
+                },
+                stacked: true,
+
+                grid: {
+                  display: false
+                }
+              },
+              y: {
+                ticks: {
+                  stepSize: 60,
+                    callback: function(value, index, values) {
+                        return index;
+                    },
+                  font: {
+                    size: 20
+                  }
+                },
+                stacked: true,
+                grid: {
+                  tickBorderDashOffset: 5,
+                  tickBorderDash: [5, 5]
+                }
+              }
+            }
+
+          }
+        }
+
+        );
+      });
+
+
+    //수면데이터 
+    fetch(`http://121.78.115.103:8180/api/report/slp-stt/week?radar_id=${device}&search_date=${date}&user_email=${email}`).then((response) => response.json()).then(jsonData => {
+      let total_sleep = jsonData.totalData.total_sleep_hour + 'h ' + jsonData.totalData.total_sleep_minute + 'min';
+      let awake_sleep = jsonData.resultList[0].non_sleep_hour + 'h ' + jsonData.resultList[0].non_sleep_minute + 'min';
+      let shallow_sleep = jsonData.resultList[0].light_sleep_hour + 'h ' + jsonData.resultList[0].light_sleep_minute + 'min';
+      let rem_sleep = jsonData.resultList[0].rem_sleep_hour + 'h ' + jsonData.resultList[0].rem_sleep_minute + 'min';
+      let deep_sleep = jsonData.resultList[0].deep_sleep_hour + 'h ' + jsonData.resultList[0].deep_sleep_minute + 'min';
+      document.getElementById('total_sleep').innerHTML = total_sleep;
+      document.getElementById('awake_sleep').innerHTML = awake_sleep;
+      document.getElementById('rem_sleep').innerHTML = rem_sleep;
+      document.getElementById('shallow_sleep').innerHTML = shallow_sleep;
+      document.getElementById('deep_sleep').innerHTML = deep_sleep;
+
+    });
+
+
+    //심박데이터
+    fetch(`http://121.78.115.103:8180/api/report/hrt-rsps/week?radar_id=${device}&search_date=${date}&user_email=${email}`).then((response) => response.json()).then(jsonData => {
+      console.log(jsonData);
+      let bpm_avg = parseInt(jsonData.resultHrtRspr.rt_avg).toString();
+      let bpm_min_max = parseInt(jsonData.resultList[0].per_mnt_hrt_rt_cnt_min) + ' - ' + parseInt(jsonData.resultList[0].per_mnt_hrt_rt_cnt_max);
+      let brpm_avg = parseInt(jsonData.resultHrtRspr.rspr_avg).toString();
+      let brpm_min_max = parseInt(jsonData.resultList[0].per_mnt_rspr_cnt_min) + ' - ' + parseInt(jsonData.resultList[0].per_mnt_rspr_cnt_max);
+
+
+      document.getElementById('bpm_avg').innerHTML = bpm_avg;
+      document.getElementById('bpm_min_max').innerHTML = bpm_min_max;
+      document.getElementById('brpm_avg').innerHTML = brpm_avg;
+      document.getElementById('brpm_min_max').innerHTML = brpm_min_max;
+
+    });
+
+
+
+    //주 심박수/호흡수 차트
+    fetch(`http://121.78.115.103:8180/api/chart/hrt-rspr/week?radar_id=${device}&search_date=${date}&user_email=${email}`)
+      .then((response) => response.json())
+      .then((jsonData) => {
+        var abcd = jsonData;
+        function bpmChartCreate() {
+          let data = []
+          let maxx = []
+          let minn = []
+          for(i=0; i < abcd.resultList.length; i++){
+          const maxvalue = abcd.resultList[i].per_mnt_hrt_rt_cnt_max;
+          const minvalue = abcd.resultList[i].per_mnt_hrt_rt_cnt_min;
+          maxx.push(maxvalue)
+          minn.push(minvalue)
+          data.push([maxvalue,minvalue])
+          }
+          let maxxvalue = Number.NEGATIVE_INFINITY; // 0을 제외한 가장 작은 값으로 초기화
+          let minnvalue = 40000000;
+
+          for (let i = 0; i < maxx.length; i++) {
+            if (maxx[i] !== 0 && maxx[i] > maxxvalue) { // 0이 아니면서 현재까지의 최댓값보다 크면
+              maxxvalue = maxx[i]; // 최댓값 갱신
+            }
+          }
+          for (let i = 0; i < minn.length; i++) {
+            if (minn[i] !== 0 && minn[i] < minnvalue) { // 0이 아니면서 현재까지의 최댓값보다 크면
+              minnvalue = minn[i]; // 최소값 갱신
+            }
+          }
+          let nextMultiple = nextMultipleOf20(maxxvalue + 4);
+          function nextMultipleOf20(maxxvalue) {
+            if (maxxvalue % 20 === 0) {
+              return maxxvalue + 20;
+            } else {
+              return Math.ceil(maxxvalue / 20) * 20;
+            }
+          }
+          let minMultiple = minMultipleOf20(minnvalue-4);
+          function minMultipleOf20(minnvalue) {
+            if (minnvalue % 20 == 0) {
+              console.log("*")
+              return minnvalue - 10;
+            } else {
+              return Math.ceil(minnvalue / -20) * -10;
+            }
+          }
+
+          function convertToDict(data) {
+            const daysOfWeek = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'];
+            const data_dict = {};
+
+            for(let i = 0; i < data.length; i++) {
+              const dayOfWeek = daysOfWeek[i];
+              
+              let max;
+              let min;
+            
+              if (data[i][0] === 0) {
+              max = -100;
+            } else {
+              max = data[i][0]
+            }
+
+            if (data[i][1] === 0) {
+              min = -100;
+            } else {
+              min = data[i][1]
+            }
+
+              if(data[i][0] === data[i][1]){
+              max = -100
+              min = -100
+            }
+
+              data_dict[`${dayOfWeek}Max`] = max;
+              data_dict[`${dayOfWeek}Min`] = min;
+            }
+            
+            return data_dict;
+          }
+
+
+          const data_dict = convertToDict(data);
+
+          let annotations = []
+          const daysaboutdate = ["MON", "TUE", "WED", "THUR", "FRI", "SAT", "SUN"];
+          for (let i = 0; i < data.length; i++) {
+            const labela = {
+              type: 'label',
+              xScaleID: 'x',
+              yScaleID: 'y',
+              xValue: daysaboutdate[i],
+              yValue: data_dict['d' + (i + 1) + 'Min'] - 7,
+              borderColor: 'rgb(255, 0, 0)',
+              borderWidth: 0,
+              font: {
+                size: 30
+              },
+              fontStyle: 'bold',
+              content: [data_dict['d' + (i + 1) + 'Min']]
+            };
+            const labelb = {
+              type: 'label',
+              xScaleID: 'x',
+              yScaleID: 'y',
+              xValue: daysaboutdate[i],
+              yValue: data_dict['d' + (i + 1) + 'Max'] + 5,
+              borderColor: 'rgb(255, 0, 0)',
+              borderWidth: 0,
+              font: {
+                size: 30
+              },
+              fontStyle: 'bold',
+              content: [data_dict['d' + (i + 1) + 'Max']]
+            }
+            annotations.push(labela, labelb); // 어노테이션 배열에 추가
+          }
+
+
+          var canvas2 = document.getElementById("myChart2");
+          var myChart2 = new Chart(canvas2, {
+            type: "bar",
+            //plugins:[ChartDataLabels],
+            data: {
+              labels: ["MON", "TUE", "WED", "THUR", "FRI", "SAT", "SUN"],
+              datasets: [
+                {
+                  backgroundColor: "#DC3535",
+                  borderColor: "#DC3535",
+                  label: "max, min",
+                  stack: "Group 1",
+                  borderWidth: 2,
+                  borderRadius: 80,//Number.MAX_VALUE
+                  borderSkipped: false,
+
+                  data: data
+                },
+              ],
+            },
+            options: {
+              animation: {
+                duration: 0
+              },
+              plugins: {
+                legend: {
+                  display: false // label을 숨길 수 있는 옵션입니다. plugins에 감싸야함 최신버전
+                },
+                annotation: {
+                  draggable: true, // 주석을 드래그할 수 있도록 설정
+                  drawTime: 'afterDatasetsDraw',
+                  annotations: annotations.filter(label => {
+
+                    if (label.yValue < -90) {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  }
+
+                  ),
+                },
+              },
+              scales: {
+                x: {
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    font: {
+                      size: 20 // x축 labels의 폰트 사이즈 조정
+                    }
+                  },
+                },
+                y: {
+                  grid: {
+                    tickBorderDashOffset: 5,
+                    tickBorderDash: [5, 5],
+                  },
+                  min: minMultiple,
+                  max: nextMultiple,
+                  ticks: {
+                    callback: function(value, index, values) {
+                      if (value === -10) {
+                        return null; // -10 레이블을 숨깁니다.
+                      } else {
+                        return value; // 다른 레이블은 보이게 합니다.
+                      }
+                    },
+                    stepSize: 20,
+                    font: {
+                      size: 20
+                    }
+                  },
+                },
+              },
+              barPercentage: 0.6,
+              categoryPercentage: 1
+            },
+
+          });
+        }
+
+        function brpmChartCreate() {
+          let data = []
+          let maxx = []
+          let minn = []
+          for(i=0; i < abcd.resultList.length; i++){
+          const maxvalue = abcd.resultList[i].per_mnt_rspr_cnt_max;
+          const minvalue = abcd.resultList[i].per_mnt_rspr_cnt_min;
+          maxx.push(maxvalue)
+          minn.push(minvalue)
+          data.push([maxvalue,minvalue])
+          }
+          let maxxvalue = Number.NEGATIVE_INFINITY; // 0을 제외한 가장 작은 값으로 초기화
+          let minnvalue = 40000000;
+
+          for (let i = 0; i < maxx.length; i++) {
+            if (maxx[i] !== 0 && maxx[i] > maxxvalue) { // 0이 아니면서 현재까지의 최댓값보다 크면
+              maxxvalue = maxx[i]; // 최댓값 갱신
+            }
+          }
+          for (let i = 0; i < minn.length; i++) {
+            if (minn[i] !== 0 && minn[i] < minnvalue) { // 0이 아니면서 현재까지의 최댓값보다 크면
+              minnvalue = minn[i]; // 최소값 갱신
+            }
+          }
+          let nextMultiple = nextMultipleOf20(maxxvalue + 4);
+          function nextMultipleOf20(maxxvalue) {
+            if (maxxvalue % 20 === 0 || maxxvalue === 20) {
+              return maxxvalue + 20;
+            } else {
+              return Math.ceil(maxxvalue / 20) * 20;
+            }
+          }
+          let minMultiple = minMultipleOf20(minnvalue-4);
+          function minMultipleOf20(minnvalue) {
+            if (minnvalue % 20 == 0) {
+              console.log("*")
+              return minnvalue - 10;
+            } else {
+              return Math.ceil(minnvalue / -20) * -10;
+            }
+          }
+
+
+
+          function convertToDict(data) {
+            const daysOfWeek = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'];
+            const data_dict = {};
+
+            for (let i = 0; i < data.length; i++) {
+              const dayOfWeek = daysOfWeek[i];
+
+              let max;
+              let min;
+            
+              if (data[i][0] === 0) {
+              max = -100;
+            } else {
+              max = data[i][0]
+            }
+
+            if (data[i][1] === 0) {
+              min = -100;
+            } else {
+              min = data[i][1]
+            }
+
+              if(data[i][0] === data[i][1]){
+              max = -100
+              min = -100
+            }
+
+              data_dict[`${dayOfWeek}Max`] = max;
+              data_dict[`${dayOfWeek}Min`] = min;
+            }
+            
+            return data_dict;
+          }
+
+
+
+          const data_dict = convertToDict(data);
+
+          let annotations = []
+          const daysaboutdate = ["MON", "TUE", "WED", "THUR", "FRI", "SAT", "SUN"];
+          for (let i = 0; i < data.length; i++) {
+            const labela = {
+              type: 'label',
+              xScaleID: 'x',
+              yScaleID: 'y',
+              xValue: daysaboutdate[i],
+              yValue: data_dict['d' + (i + 1) + 'Min'] - 2.2,
+              borderColor: 'rgb(255, 0, 0)',
+              borderWidth: 0,
+              font: {
+                size: 30
+              },
+              fontStyle: 'bold',
+              content: [data_dict['d' + (i + 1) + 'Min']]
+            };
+            const labelb = {
+              type: 'label',
+              xScaleID: 'x',
+              yScaleID: 'y',
+              xValue: daysaboutdate[i],
+              yValue: data_dict['d' + (i + 1) + 'Max'] + 1.7,
+              borderColor: 'rgb(255, 0, 0)',
+              borderWidth: 0,
+              font: {
+                size: 30
+              },
+              fontStyle: 'bold',
+              content: [data_dict['d' + (i + 1) + 'Max']]
+            }
+            annotations.push(labela, labelb); // 어노테이션 배열에 추가
+          }
+
+
+          var canvas3 = document.getElementById("myChart3");
+          var myChart3 = new Chart(canvas3, {
+            type: "bar",
+            //plugins:[ChartDataLabels],
+            data: {
+              labels: ["MON", "TUE", "WED", "THUR", "FRI", "SAT", "SUN"],
+              datasets: [
+                {
+                  backgroundColor: "#68B984",
+                  borderColor: "#68B984",
+                  label: "max, min",
+                  stack: "Group 1",
+                  borderWidth: 2,
+                  borderRadius: 80,//Number.MAX_VALUE
+                  borderSkipped: false,
+
+                  data: data
+                },
+              ],
+            },
+            options: {
+              plugins: {
+                legend: {
+                  display: false // label을 숨길 수 있는 옵션입니다. plugins에 감싸야함 최신버전
+                },
+                annotation: {
+                  draggable: true, // 주석을 드래그할 수 있도록 설정
+                  drawTime: 'afterDatasetsDraw',
+                  annotations:
+
+                    annotations.filter(label => {
+
+                      if (label.yValue < -90) {
+                      return false;
+                    } else {
+                      return true;
+                    }
+                    }
+
+                    ),
+                },
+              },
+              scales: {
+                x: {
+                  ticks: {
+                    font: {
+                      size: 20 // x축 labels의 폰트 사이즈 조정
+                    }
+                  },
+                  grid: {
+                    display: false,
+                  },
+                },
+                y: {
+                  grid: {
+                    tickBorderDashOffset: 5,
+                    tickBorderDash: [5, 5],
+                  },
+                  min: minMultiple,
+                  max: nextMultiple,
+                  ticks: {
+                    callback: function(value, index, values) {
+                      if (value === -10) {
+                        return null; // -10 레이블을 숨깁니다.
+                      } else {
+                        return value; // 다른 레이블은 보이게 합니다.
+                      }
+                    },
+                    stepSize: 20,
+                    font: {
+                      size: 20 // x축 labels의 폰트 사이즈 조정
+                    }
+                  },
+                },
+              },
+              barPercentage: 0.6,
+              categoryPercentage: 1
+            },
+
+          });
+        }
+
+
+        bpmChartCreate();//차트생성
+        brpmChartCreate();//차트생성
+
+      });
+
+
+
+
+
+  </script>
+</body>
+
+</html>

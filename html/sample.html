@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Heart Rate Chart with Chart.js</title>
+</head>
+
+<body>
+  <h1 id="test">1</h1>
+  <script>
+    // WebView에서 데이터를 수신하는 예제 코드
+    window.addEventListener('message', (event) => {
+      const data = event.data;
+      alert(data);
+      document.querySelector('#test').innerHTML = data;
+    });
+  </script>
+</body>
+
+</html>
